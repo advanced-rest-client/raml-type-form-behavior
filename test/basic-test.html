@@ -1,0 +1,126 @@
+<!doctype html>
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../web-component-tester/browser.js"></script>
+    <script src="../../iron-test-helpers/test-helpers.js"></script>
+    <link rel="import" href="raml-type-element.html">
+  </head>
+  <body>
+
+    <test-fixture id="basic">
+      <template>
+        <raml-type-element></raml-type-element>
+      </template>
+    </test-fixture>
+
+    <script>
+    /* global fixture, assert */
+    suite('basic', function() {
+      var element;
+      setup(function() {
+        element = fixture('basic');
+      });
+
+      suite('__parseArrayExample()', function() {
+        test('Parsers example string', function() {
+          var str = '["a", "b"]';
+          var result = element.__parseArrayExample(str);
+          assert.typeOf(result, 'array');
+        });
+
+        test('Returns the same input if not valid JSON', function() {
+          var str = 'test';
+          var result = element.__parseArrayExample(str);
+          assert.equal(result, str);
+        });
+
+        test('Returns the same input if not array', function() {
+          var str = '{"a": "b"}';
+          var result = element.__parseArrayExample(str);
+          assert.equal(result, str);
+        });
+      });
+
+      suite('_defaultModelOptions()', function() {
+        test('Creates default options', function() {
+          var result = element._defaultModelOptions();
+          assert.equal(result.valueDelimiter, '=');
+          assert.isFalse(result.decodeValues);
+        });
+
+        test('Accept existing values', function() {
+          var result = element._defaultModelOptions({
+            valueDelimiter: ':',
+            decodeValues: true
+          });
+          assert.equal(result.valueDelimiter, ':');
+          assert.isTrue(result.decodeValues);
+        });
+      });
+
+      suite('_computeModelPattern()', function() {
+        test('Computes pattern for date type', function() {
+          var input = {
+            inputType: 'date'
+          };
+          var result = element._computeModelPattern(input);
+          assert.typeOf(result.pattern, 'string');
+        });
+
+        test('Do not sets patter if pattern is already set', function() {
+          var input = {
+            inputType: 'date',
+            pattern: 'test'
+          };
+          var result = element._computeModelPattern(input);
+          assert.equal(result.pattern, 'test');
+        });
+      });
+
+      suite('_createModelObject()', function() {
+        var input;
+
+        setup(function() {
+          input = {
+            default: 'test-default',
+            required: true,
+            examples: ['test-example'],
+            minLength: 12
+          };
+        });
+
+        test('Adds value to required object from default value', function() {
+          var result = element._createModelObject(input);
+          assert.equal(result.value, 'test-default');
+        });
+
+        test('Adds value to required object from example value', function() {
+          delete input.default;
+          var result = element._createModelObject(input);
+          assert.equal(result.value, 'test-example');
+        });
+
+        test('Adds value to required object from example value', function() {
+          input.required = false;
+          var result = element._createModelObject(input);
+          assert.isUndefined(result.value);
+        });
+      });
+    });
+    </script>
+
+  </body>
+</html>

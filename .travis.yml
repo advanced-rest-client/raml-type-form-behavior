@@ -1,0 +1,13 @@
+language: node_js
+node_js: stable
+before_script:
+- npm install --silent bower polymer-cli
+- "./node_modules/.bin/bower install --silent"
+addons:
+  sauce_connect: true
+script:
+- npm run lint
+- ./node_modules/.bin/polymer test --plugin sauce --job-name "raml-type-form-behavior:${TRAVIS_BRANCH}"
+  --build-number=${TRAVIS_BUILD_NUMBER}
+after_success:
+- node tasks/ci.js

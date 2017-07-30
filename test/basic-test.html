@@ -118,6 +118,24 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           var result = element._createModelObject(input);
           assert.isUndefined(result.value);
         });
+
+        test('Creates model from array item', function() {
+          input.type = 'array';
+          input.items = 'string';
+          var result = element._createModelObject(input);
+          assert.typeOf(result.value, 'array');
+          assert.isTrue(result.isArray);
+        });
+
+        test('Handles string array examples', function() {
+          var example = ['18-FINANCE','200-MISC'];
+          input.examples = [JSON.stringify(example)];
+          input.type = 'array';
+          input.items = 'string';
+          delete input.default;
+          var result = element._createModelObject(input);
+          assert.deepEqual(result.value, example);
+        });
       });
     });
     </script>

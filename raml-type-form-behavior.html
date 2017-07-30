@@ -116,7 +116,8 @@ the License.
         } else if (item.example) {
           item.value = item.example;
         }
-        if (item.value && item.value.indexOf && item.value.indexOf(item.name + opts.valueDelimiter) === 0) {
+        if (item.value && item.value.indexOf &&
+          item.value.indexOf(item.name + opts.valueDelimiter) === 0) {
           item.value = item.value.substr(item.name.length + 1);
         }
         if (typeof item.value === 'undefined' && item.isEnum) {
@@ -128,7 +129,8 @@ the License.
       }
 
       if (item.value && item.isArray && typeof item.value === 'string') {
-        item.value = [item.value];
+        var _v = this.__parseArrayExample(item.value);
+        item.value = _v instanceof Array ? _v : [_v];
       }
 
       if (item.isArray && !item.value) {
